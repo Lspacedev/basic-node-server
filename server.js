@@ -4,6 +4,9 @@ let countries = [{ name: "South Africa" }, { name: "Botswana" }];
 const server = http.createServer((req, res) => {
   let endPoint = req.url;
   let method = req.method;
+  req.on("error", (err) => {
+    console.error(err);
+  });
   if (endPoint === "/" && method === "GET") {
     res.setHeader("Content-Type", "text/html");
     res.statusCode = 200;
@@ -15,17 +18,13 @@ const server = http.createServer((req, res) => {
          <a href="/delete">/delete</a>
       `);
     res.end();
-  }
-
-  if (endPoint === "/countries" && method === "GET") {
+  } else if (endPoint === "/countries" && method === "GET") {
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 200;
 
     res.write(JSON.stringify(countries));
     res.end();
-  }
-
-  if (endPoint === "/add" && method === "GET") {
+  } else if (endPoint === "/add" && method === "GET") {
     res.setHeader("Content-Type", "text/html");
     res.statusCode = 200;
     res.write(`
@@ -36,10 +35,8 @@ const server = http.createServer((req, res) => {
       </form>
       `);
     res.end();
-  }
-
-  //POST
-  if (endPoint === "/add" && method === "POST") {
+  } else if (endPoint === "/add" && method === "POST") {
+    //POST
     let body = "";
     req.on("data", (data) => {
       body += data;
@@ -52,11 +49,8 @@ const server = http.createServer((req, res) => {
     });
     res.writeHead(301, { Location: "http://localhost:3000/countries" });
     res.end();
-  }
-
-  //DELETE
-
-  if (endPoint === "/delete" && method === "GET") {
+  } else if (endPoint === "/delete" && method === "GET") {
+    //DELETE
     res.setHeader("Content-Type", "text/html");
     res.statusCode = 200;
     res.write(`
@@ -67,8 +61,7 @@ const server = http.createServer((req, res) => {
       </form>
       `);
     res.end();
-  }
-  if (endPoint === "/delete" && method === "POST") {
+  } else if (endPoint === "/delete" && method === "POST") {
     let body = "";
     req.on("data", (data) => {
       body += data;
@@ -85,11 +78,8 @@ const server = http.createServer((req, res) => {
     res.statusCode = 200;
     res.write(`<p>Deleted Country</p>`);
     res.end();
-  }
-
-  //UPDATE
-
-  if (endPoint === "/update" && method === "GET") {
+  } else if (endPoint === "/update" && method === "GET") {
+    //UPDATE
     res.setHeader("Content-Type", "text/html");
     res.statusCode = 200;
     res.write(`
@@ -101,8 +91,7 @@ const server = http.createServer((req, res) => {
       </form>
       `);
     res.end();
-  }
-  if (endPoint === "/update" && method === "POST") {
+  } else if (endPoint === "/update" && method === "POST") {
     let body = "";
     req.on("data", (data) => {
       body += data;
@@ -115,6 +104,11 @@ const server = http.createServer((req, res) => {
     res.write(`<p>Updated Country</p>`);
     // res.writeHead(301, { Location: "http://localhost:3000/countries" });
 
+    res.end();
+  } else {
+    res.setHeader("Content-Type", "text/html");
+    res.statusCode = 200;
+    res.write(`<p>Route doesn't exist</p>`);
     res.end();
   }
 });
